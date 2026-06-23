@@ -1,28 +1,73 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
-const UserSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: [true, 'Please add a username'],
-        unique: true,
-        trim: true
+const userSchema = new mongoose.Schema(
+    {
+        name: {
+            type: String,
+            required: [true, 'Please provide a name'],
+        },
+        username: { // 👈 මෙන්න මේ කොටස අලුතින් එකතු කලා
+            type: String,
+            required: [true, 'Please provide a username'],
+            unique: true, // හැමෝටම එකම username එකක් තියෙන්න බෑ
+            trim: true,
+        },
+        email: {
+            type: String,
+            required: [true, 'Please provide an email'],
+            unique: true,
+            match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email'],
+        },
+        nic: {
+            type: String,
+            required: [true, 'Please provide a NIC'],
+            unique: true,
+        },
+        contact: {
+            type: String,
+            required: [true, 'Please provide a contact number'],
+        },
+        password: {
+            type: String,
+            required: [true, 'Please provide a password'],
+            minlength: 6,
+            select: false,
+        },
+        role: {
+            type: String,
+            enum: ['student', 'admin'],
+            default: 'student',
+        },
+        branch: { // 👈 මෙතන type එක ObjectId වෙනුවට String කලා ඔයා දාපු නම් 3 සේව් වෙන්න
+            type: String,
+        },
+        approvalStatus: {
+            type: String,
+            enum: ['pending', 'approved', 'rejected'],
+            default: 'pending',
+        },
+        enrollmentDate: {
+            type: Date,
+            default: Date.now,
+        },
     },
-    password: {
-        type: String,
-        required: [true, 'Please add a password'],
-        minlength: 6
-    },
-    role: {
-        type: String,
-        enum: ['admin', 'customer'],
-        default: 'customer'
-    },
-    branch: {
-        type: String,
-        required: [true, 'Please select a branch']
+    { timestamps: true }
+);
+
+// Hash password before saving
+userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) {
+        next();
     }
-}, {
-    timestamps: true 
+
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
 });
 
-module.exports = mongoose.model('User', UserSchema);
+// Match user entered password to hashed password in database
+userSchema.methods.matchPassword = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+};
+
+module.exports = mongoose.model('User', userSchema);

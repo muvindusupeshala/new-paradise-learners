@@ -22,13 +22,13 @@ const Dashboard = () => {
         navigate('/login');
     };
 
-    if (!user) return <div style={styles.container}><h3 style={{color: '#fff'}}>Loading...</h3></div>;
+    if (!user) return <div style={styles.loadingContainer}><h3>Loading...</h3></div>;
 
     return (
         <div style={styles.container}>
             <div style={styles.card}>
                 <h1 style={styles.welcome}>Welcome to Paradise Learners 🎉</h1>
-                
+
                 <div style={styles.profileBox}>
                     <h3 style={styles.sectionTitle}>👤 Customer Profile</h3>
                     {/* Backend එකෙන් එන response structure එක අනුව user.result හෝ user විදිහට ගන්න */}
@@ -43,14 +43,82 @@ const Dashboard = () => {
     );
 };
 
+// ==========================================
+// MODERN BLUE, RED & WHITE INLINE STYLES
+// ==========================================
 const styles = {
-    container: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#0f172a', padding: '10px' },
-    card: { backgroundColor: '#1e293b', padding: '40px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '450px', textAlign: 'center' },
-    welcome: { color: '#ffffff', marginBottom: '25px', fontFamily: 'sans-serif', fontSize: '26px' },
-    profileBox: { backgroundColor: '#334155', padding: '20px', borderRadius: '8px', textAlign: 'left', marginBottom: '20px' },
-    sectionTitle: { color: '#3b82f6', marginTop: 0, marginBottom: '15px', fontFamily: 'sans-serif' },
-    text: { color: '#cbd5e1', margin: '8px 0', fontSize: '16px', fontFamily: 'sans-serif' },
-    button: { padding: '12px 25px', borderRadius: '6px', border: 'none', backgroundColor: '#ef4444', color: '#fff', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', transition: '0.3s' }
+    container: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: '#f8fafc', // Clean White/Light Gray background
+        padding: '10px'
+    },
+    loadingContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: '#f8fafc',
+        color: '#2563eb',
+        fontFamily: 'sans-serif'
+    },
+    card: {
+        backgroundColor: '#ffffff', // Pure White Card
+        padding: '40px',
+        borderRadius: '12px',
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)', // Professional shadow
+        borderTop: '5px solid #dc2626', // Top Red Accent Bar
+        borderBottom: '1px solid #e2e8f0',
+        borderLeft: '1px solid #e2e8f0',
+        borderRight: '1px solid #e2e8f0',
+        width: '450px',
+        textAlign: 'center'
+    },
+    welcome: {
+        color: '#1e3a8a', // Dark Pure Blue
+        marginBottom: '25px',
+        fontFamily: 'sans-serif',
+        fontSize: '24px',
+        fontWeight: 'bold'
+    },
+    profileBox: {
+        backgroundColor: '#eff6ff', // Light Blue Box Background
+        padding: '20px',
+        borderRadius: '8px',
+        textAlign: 'left',
+        marginBottom: '25px',
+        border: '1px solid #bfdbfe' // Soft blue border
+    },
+    sectionTitle: {
+        color: '#dc2626', // Bright Red Title
+        marginTop: 0,
+        marginBottom: '15px',
+        fontFamily: 'sans-serif',
+        fontSize: '18px',
+        fontWeight: 'bold'
+    },
+    text: {
+        color: '#1e293b', // Dark Charcoal text for maximum readability
+        margin: '10px 0',
+        fontSize: '15px',
+        fontFamily: 'sans-serif'
+    },
+    button: {
+        padding: '12px 30px',
+        borderRadius: '6px',
+        border: 'none',
+        backgroundColor: '#dc2626', // Pure Red Button
+        color: '#ffffff',
+        fontSize: '15px',
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+        cursor: 'pointer',
+        boxShadow: '0 4px 6px -1px rgba(220, 38, 38, 0.2)',
+        transition: '0.3s background-color ease'
+    }
 };
 
 export default Dashboard;
