@@ -39,8 +39,8 @@ const LoginPage = () => {
         e.preventDefault();
         setLoading(true);
         setError('');
-        setSuccess('');
 
+        // 1. Inputs හිස්ද කියලා මුලින්ම Check කරනවා
         if (!formData.credential || !formData.password) {
             setError('Please fill in all fields');
             setLoading(false);
@@ -48,35 +48,35 @@ const LoginPage = () => {
         }
 
         try {
-            // 🎯 Backend එක email බලාපොරොත්තු වුණත්, username බලාපොරොත්තු වුණත් දෙකටම ඩේටා යවනවා
+            // 2. Backend එකේ Login API එකට Request එක යවනවා
+            // 💡 මචන් මෙතනදී අපි 'email' සහ 'username' දෙකටම යවන්නේ 'credential' එක (දෙකෙන් මොකෙන් ආවත් backend එක අඳුරගන්න නිසා)
             const response = await axios.post('http://localhost:5000/api/auth/login', {
                 email: formData.credential,
                 username: formData.credential,
                 password: formData.password
             });
 
+            // 3. Login එක සාර්ථක නම් (success: true)
             if (response.data.success) {
+                // Token එක සහ User Objects ටික බ්‍රවුසර් එකේ LocalStorage එකට දානවා
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('user', JSON.stringify(response.data.user));
 
-                setSuccess('Login successful! Redirecting...');
-
+                // AuthContext එකේ තියෙන login function එක call කරලා State එක update කරනවා
                 if (typeof login === 'function') {
                     await login(response.data);
                 }
 
-                const role = response.data.user?.role;
+                // 🚀 කෙලින්ම අපේ පොදු /dashboard එකට විසි කරනවා! 
+                // එතනින් App.jsx එක බලාගනී මුලින්ම ආපු කෙනා Admin ද Student ද කියලා
                 setTimeout(() => {
-                    if (role === 'admin') {
-                        window.location.href = '/admin-dashboard';
-                    } else {
-                        window.location.href = '/student-dashboard';
-                    }
-                }, 1000);
+                    window.location.href = '/dashboard';
+                }, 500);
             }
         } catch (err) {
             console.error('Login Error:', err);
-            setError(err.response?.data?.message || 'Invalid credentials');
+            // Backend එකෙන් එන වැරදි (Invalid credentials වගේ) පෙන්වනවා
+            setError(err.response?.data?.message || 'Invalid credentials. Please try again.');
         } finally {
             setLoading(false);
         }

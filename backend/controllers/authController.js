@@ -14,15 +14,14 @@ const generateToken = (id, role) => {
 // @access Public
 const register = async (req, res) => {
     try {
-        // 1. req.body එකට username එක සහ branchId එකතු කරගත්තා
         const { name, username, email, nic, contact, password, branchId } = req.body;
 
-        // Validation - username එකත් අනිවාර්ය කලා
+        // Validation
         if (!name || !username || !email || !nic || !contact || !password) {
             return res.status(400).json({ message: 'Please provide all required fields' });
         }
 
-        // Check if username already exists (Username එක කලින් කෙනෙක් අරන්ද බලනවා)
+        // Check if username already exists
         const usernameExists = await User.findOne({ username });
         if (usernameExists) {
             return res.status(400).json({ message: 'Username is already taken' });
@@ -34,17 +33,17 @@ const register = async (req, res) => {
             return res.status(400).json({ message: 'User with this email already exists' });
         }
 
-        // Create user - මෙතනට username එක සහ branch එකට branchId එක සෙට් කලා
+        // Create user
         const user = await User.create({
             name,
-            username, // 👈 Database එකට සේව් වෙනවා
+            username,
             email,
             nic,
             contact,
             password,
-            branch: branchId, // Frontend එකෙන් එවපු "Ogodapola" වගේ String එක කෙලින්ම යනවා
+            branch: branchId,
             role: 'student',
-            approvalStatus: 'pending',
+            approvalStatus: 'approved', // 👈 🎯 Pending වෙනුවට කෙලින්ම Approved විදිහට සේව් වෙනවා!
         });
 
         // Generate token
@@ -52,12 +51,12 @@ const register = async (req, res) => {
 
         res.status(201).json({
             success: true,
-            message: 'User registered successfully',
+            message: 'User registered successfully and approved',
             token,
             user: {
                 id: user._id,
                 name: user.name,
-                username: user.username, // 👈 Response එකටත් එකතු කලා
+                username: user.username,
                 email: user.email,
                 role: user.role,
                 approvalStatus: user.approvalStatus,
@@ -73,16 +72,22 @@ const register = async (req, res) => {
 // @access Public
 const login = async (req, res) => {
     try {
-        // 2. Email වෙනුවට දැන් req.body එකෙන් username එක ගන්නවා
-        const { username, password } = req.body;
+        const { username, email, password } = req.body;
+        const loginQuery = username || email;
 
         // Validation
-        if (!username || !password) {
-            return res.status(400).json({ message: 'Please provide username and password' });
+        if (!loginQuery || !password) {
+            return res.status(400).json({ message: 'Please provide email/username and password' });
         }
 
-        // Check for user using USERNAME (Email වෙනුවට Username එකෙන් find කරනවා)
-        const user = await User.findOne({ username }).select('+password');
+        // Username එකෙන් හෝ Email එකෙන් ඩේටාබේස් එක පීරලා හොයනවා
+        const user = await User.findOne({
+            $or: [
+                { username: loginQuery },
+                { email: loginQuery }
+            ]
+        }).select('+password');
+
         if (!user) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
@@ -106,7 +111,7 @@ const login = async (req, res) => {
             user: {
                 id: user._id,
                 name: user.name,
-                username: user.username, // 👈
+                username: user.username,
                 email: user.email,
                 role: user.role,
                 approvalStatus: user.approvalStatus,
@@ -122,11 +127,21 @@ const login = async (req, res) => {
 // @access Private
 const getCurrentUser = async (req, res) => {
     try {
-        // බ්‍රාන්ච් එක String එකක් නිසා පරණ .populate('branch') එක අයින් කලා (නැත්නම් error එන්න පුළුවන්)
         const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
         res.status(200).json({
             success: true,
-            user,
+            user: {
+                id: user._id,
+                name: user.name,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                approvalStatus: user.approvalStatus,
+            },
         });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -181,7 +196,6 @@ const getDashboardStats = async (req, res) => {
 // @access Private/Admin
 const getAllStudents = async (req, res) => {
     try {
-        // බ්‍රාන්ච් එක String එකක් නිසා පරණ .populate('branch') එක අයින් කලා
         const students = await User.find({ role: 'student' });
         res.status(200).json({
             success: true,
@@ -223,4 +237,12 @@ const updateApprovalStatus = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getCurrentUser, getBranches, getDashboardStats, getAllStudents, updateApprovalStatus };
+module.exports = {
+    register,
+    login,
+    getCurrentUser,
+    getBranches,
+    getDashboardStats,
+    getAllStudents,
+    updateApprovalStatus
+};
