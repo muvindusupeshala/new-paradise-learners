@@ -7,10 +7,10 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: [true, 'Please provide a name'],
         },
-        username: { // 👈 මෙන්න මේ කොටස අලුතින් එකතු කලා
+        username: {
             type: String,
             required: [true, 'Please provide a username'],
-            unique: true, // හැමෝටම එකම username එකක් තියෙන්න බෑ
+            unique: true,
             trim: true,
         },
         email: {
@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: [true, 'Please provide a contact number'],
         },
+        address: { // 👈 🎯 මෙන්න මේ කොටස අලුතින්ම එකතු කළා මචන්!
+            type: String,
+            required: false, // ෆ්‍රොන්ට් එන්ඩ් එකෙන් අනිවාර්යයෙන්ම එන නිසා මෙතන false තිබ්බට අවුලක් නෑ
+        },
         password: {
             type: String,
             required: [true, 'Please provide a password'],
@@ -39,7 +43,7 @@ const userSchema = new mongoose.Schema(
             enum: ['student', 'admin'],
             default: 'student',
         },
-        branch: { // 👈 මෙතන type එක ObjectId වෙනුවට String කලා ඔයා දාපු නම් 3 සේව් වෙන්න
+        branch: {
             type: String,
         },
         approvalStatus: {

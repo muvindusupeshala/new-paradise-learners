@@ -14,7 +14,7 @@ const generateToken = (id, role) => {
 // @access Public
 const register = async (req, res) => {
     try {
-        const { name, username, email, nic, contact, password, branchId } = req.body;
+        const { name, username, email, nic, contact, address, password, branchId } = req.body; // 👈 address එකත් ගත්තා
 
         // Validation
         if (!name || !username || !email || !nic || !contact || !password) {
@@ -40,10 +40,11 @@ const register = async (req, res) => {
             email,
             nic,
             contact,
+            address, // 👈 Schema එකේ address තියෙනවා නම් ඒකත් සේව් වෙනවා
             password,
             branch: branchId,
             role: 'student',
-            approvalStatus: 'approved', // 👈 🎯 Pending වෙනුවට කෙලින්ම Approved විදිහට සේව් වෙනවා!
+            approvalStatus: 'approved',
         });
 
         // Generate token
@@ -60,6 +61,9 @@ const register = async (req, res) => {
                 email: user.email,
                 role: user.role,
                 approvalStatus: user.approvalStatus,
+                nic: user.nic,          // 👈 Frontend එකට යැව්වා
+                contact: user.contact,  // 👈 Frontend එකට යැව්වා
+                address: user.address,  // 👈 Frontend එකට යැව්වා
             },
         });
     } catch (error) {
@@ -115,6 +119,9 @@ const login = async (req, res) => {
                 email: user.email,
                 role: user.role,
                 approvalStatus: user.approvalStatus,
+                nic: user.nic,          // 👈 Frontend එකට යැව්වා
+                contact: user.contact,  // 👈 Frontend එකට යැව්වා
+                address: user.address,  // 👈 Frontend එකට යැව්වා
             },
         });
     } catch (error) {
@@ -141,6 +148,9 @@ const getCurrentUser = async (req, res) => {
                 email: user.email,
                 role: user.role,
                 approvalStatus: user.approvalStatus,
+                nic: user.nic,          // 👈 Frontend එකට යැව්වා
+                contact: user.contact,  // 👈 Frontend එකට යැව්වා
+                address: user.address,  // 👈 Frontend එකට යැව්වා
             },
         });
     } catch (error) {
