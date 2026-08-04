@@ -39,6 +39,7 @@ const LoginPage = () => {
         e.preventDefault();
         setLoading(true);
         setError('');
+        setSuccess('');
 
         // 1. Inputs හිස්ද කියලා මුලින්ම Check කරනවා
         if (!formData.credential || !formData.password) {
@@ -49,7 +50,6 @@ const LoginPage = () => {
 
         try {
             // 2. Backend එකේ Login API එකට Request එක යවනවා
-            // 💡 මචන් මෙතනදී අපි 'email' සහ 'username' දෙකටම යවන්නේ 'credential' එක (දෙකෙන් මොකෙන් ආවත් backend එක අඳුරගන්න නිසා)
             const response = await axios.post('http://localhost:5000/api/auth/login', {
                 email: formData.credential,
                 username: formData.credential,
@@ -58,6 +58,8 @@ const LoginPage = () => {
 
             // 3. Login එක සාර්ථක නම් (success: true)
             if (response.data.success) {
+                setSuccess('Login successful! Redirecting...');
+
                 // Token එක සහ User Objects ටික බ්‍රවුසර් එකේ LocalStorage එකට දානවා
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -67,15 +69,19 @@ const LoginPage = () => {
                     await login(response.data);
                 }
 
-                // 🚀 කෙලින්ම අපේ පොදු /dashboard එකට විසි කරනවා! 
-                // එතනින් App.jsx එක බලාගනී මුලින්ම ආපු කෙනා Admin ද Student ද කියලා
+                // 🚀 කෙලින්ම යූසර්ගේ role එක බලලා අදාළ Dashboard එකට navigate කරනවා
+                const userRole = response.data.user?.role;
+
                 setTimeout(() => {
-                    window.location.href = '/dashboard';
+                    if (userRole === 'admin') {
+                        navigate('/admin-dashboard'); // 👈 Admin කෙනෙක් නම් Admin Dashboard එකට
+                    } else {
+                        navigate('/student-dashboard'); // 👈 Student කෙනෙක් නම් Student Dashboard එකට
+                    }
                 }, 500);
             }
         } catch (err) {
             console.error('Login Error:', err);
-            // Backend එකෙන් එන වැරදි (Invalid credentials වගේ) පෙන්වනවා
             setError(err.response?.data?.message || 'Invalid credentials. Please try again.');
         } finally {
             setLoading(false);

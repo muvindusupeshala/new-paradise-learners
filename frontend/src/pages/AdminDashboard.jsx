@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { LogOut, Users, Clock, CheckCircle, Search, Filter } from 'lucide-react';
+import { LogOut, Users, Clock, CheckCircle, Phone, Mail, IdCard, Calendar, MapPin, X, CreditCard, HeartPulse, Car, Award } from 'lucide-react';
 import axios from 'axios';
 
 const AdminDashboard = () => {
@@ -16,6 +16,10 @@ const AdminDashboard = () => {
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
+
+    const [selectedStudent, setSelectedStudent] = useState(null);
+    const [activeTab, setActiveTab] = useState('profile');
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -54,7 +58,9 @@ const AdminDashboard = () => {
         navigate('/');
     };
 
-    const handleApproveStudent = async (studentId, newStatus) => {
+    const handleApproveStudent = async (studentId, newStatus, e) => {
+        if (e) e.stopPropagation();
+
         try {
             const headers = { Authorization: `Bearer ${token}` };
             const response = await axios.put(
@@ -63,10 +69,12 @@ const AdminDashboard = () => {
                 { headers }
             );
 
-            // Update the local state
             setStudents(students.map((s) => (s._id === studentId ? response.data.user : s)));
 
-            // Refresh stats
+            if (selectedStudent && selectedStudent._id === studentId) {
+                setSelectedStudent({ ...selectedStudent, approvalStatus: newStatus });
+            }
+
             fetchData();
         } catch (err) {
             console.error('Error updating student:', err);
@@ -74,12 +82,11 @@ const AdminDashboard = () => {
         }
     };
 
-    // Filter students
     const filteredStudents = students.filter((student) => {
         const matchesSearch =
-            student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            student.nic.includes(searchTerm);
+            student.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            student.nic?.includes(searchTerm);
 
         const matchesFilter = filterStatus === 'all' || student.approvalStatus === filterStatus;
 
@@ -87,189 +94,399 @@ const AdminDashboard = () => {
     });
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-slate-100 font-sans flex flex-col justify-start items-center w-full antialiased relative">
             {/* Navbar */}
-            <nav className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg border-b-4 border-red-600">
-                <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
-                    <h1 className="text-3xl font-bold text-white">🎓 New Paradise Learners - Admin</h1>
-                    <div className="flex items-center space-x-6">
-                        <span className="text-lg font-semibold text-white">{user?.name} (Admin)</span>
+            <nav className="bg-blue-600 text-white shadow-md sticky top-0 z-50 w-full flex justify-center border-b-2 border-blue-700">
+                <div className="w-full max-w-[95vw] px-4 py-4 flex justify-between items-center">
+                    <div className="flex items-center space-x-3">
+                        <span className="text-2xl">🎓</span>
+                        <h1 className="text-2xl font-extrabold tracking-tight">New Paradise Learners <span className="text-blue-200 font-normal text-lg">| Admin Panel</span></h1>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                        <span className="text-sm font-semibold bg-blue-700 px-4 py-2 rounded-full border border-blue-500 shadow-inner">
+                            {user?.name || 'Admin'}
+                        </span>
                         <button
                             onClick={handleLogout}
-                            className="flex items-center bg-red-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-red-700 transition border-2 border-red-700"
+                            className="flex items-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all duration-200 shadow-md"
                         >
-                            <LogOut className="w-4 h-4 mr-2" />
+                            <LogOut className="w-4 h-4 mr-1.5" />
                             Logout
                         </button>
                     </div>
                 </div>
             </nav>
 
-            {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-4 py-8 bg-gradient-to-b from-blue-50 to-white min-h-screen">
-                {/* Header */}
-                <div className="mb-8">
-                    <h2 className="text-3xl font-bold text-blue-800">Admin Dashboard 📊</h2>
-                    <p className="text-blue-700 mt-2 font-semibold">Manage student registrations and approvals</p>
+            {/* Main Layout Container */}
+            <div className="w-full max-w-[95vw] px-4 py-8 flex flex-col space-y-8">
+                {/* Title Header */}
+                <div className="border-b border-slate-200 pb-4">
+                    <h2 className="text-3xl font-black text-slate-800 flex items-center gap-2">
+                        Admin Dashboard <span className="text-2xl">📊</span>
+                    </h2>
+                    <p className="text-slate-500 text-base mt-1 font-medium">Manage student registrations, approvals and center distribution efficiently.</p>
                 </div>
 
-                {/* Error Message */}
-                {error && (
-                    <div className="mb-6 p-4 bg-red-100 border-2 border-red-500 rounded-lg">
-                        <p className="text-red-700 font-semibold">{error}</p>
-                    </div>
-                )}
+                {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl font-bold">{error}</div>}
 
-                {/* Stats Cards */}
+                {/* Main Dashboard Stats Cards */}
                 {!loading && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        {/* Total Students */}
-                        <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg shadow-lg p-6 border-4 border-blue-300">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-blue-700 text-sm font-bold">Total Students</p>
-                                    <p className="text-3xl font-black text-blue-800 mt-2">{stats.totalStudents}</p>
-                                </div>
-                                <Users className="w-12 h-12 text-blue-600" />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+                        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex items-center justify-between transition-all duration-200 hover:shadow-md">
+                            <div className="space-y-1">
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Students</p>
+                                <p className="text-4xl font-black text-blue-600">{stats.totalStudents}</p>
+                            </div>
+                            <div className="p-4 bg-blue-50 rounded-xl text-blue-600">
+                                <Users className="w-8 h-8" />
                             </div>
                         </div>
 
-                        {/* Pending Approvals */}
-                        <div className="bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg shadow-lg p-6 border-4 border-yellow-300">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-gray-600 text-sm font-bold">Pending Approvals</p>
-                                    <p className="text-3xl font-black text-yellow-600 mt-2">{stats.pendingApprovals}</p>
-                                </div>
-                                <Clock className="w-12 h-12 text-yellow-500" />
+                        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex items-center justify-between transition-all duration-200 hover:shadow-md">
+                            <div className="space-y-1">
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Pending Approvals</p>
+                                <p className="text-4xl font-black text-amber-500">{stats.pendingApprovals}</p>
+                            </div>
+                            <div className="p-4 bg-amber-50 rounded-xl text-amber-500">
+                                <Clock className="w-8 h-8" />
                             </div>
                         </div>
 
-                        {/* Approved Students */}
-                        <div className="bg-gradient-to-br from-green-100 to-green-200 rounded-lg shadow-lg p-6 border-4 border-green-300">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-gray-600 text-sm font-bold">Approved Students</p>
-                                    <p className="text-3xl font-black text-green-600 mt-2">{stats.approvedStudents}</p>
-                                </div>
-                                <CheckCircle className="w-12 h-12 text-green-500" />
+                        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex items-center justify-between transition-all duration-200 hover:shadow-md">
+                            <div className="space-y-1">
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Approved Students</p>
+                                <p className="text-4xl font-black text-emerald-600">{stats.approvedStudents}</p>
+                            </div>
+                            <div className="p-4 bg-emerald-50 rounded-xl text-emerald-600">
+                                <CheckCircle className="w-8 h-8" />
                             </div>
                         </div>
                     </div>
                 )}
 
-                {/* Students Management */}
-                <div className="bg-white rounded-lg shadow">
-                    <div className="p-6 border-b border-gray-200">
-                        <h3 className="text-xl font-bold text-gray-800 mb-4">Student Management</h3>
-
-                        {/* Search and Filter */}
-                        <div className="flex flex-col md:flex-row gap-4">
-                            <div className="flex-1 relative">
-                                <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                                <input
-                                    type="text"
-                                    placeholder="Search by name, email, or NIC..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-
-                            <div className="relative">
-                                <Filter className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                                <select
-                                    value={filterStatus}
-                                    onChange={(e) => setFilterStatus(e.target.value)}
-                                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="all">All Status</option>
-                                    <option value="pending">Pending</option>
-                                    <option value="approved">Approved</option>
-                                    <option value="rejected">Rejected</option>
-                                </select>
-                            </div>
+                {/* Table Section */}
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col w-full">
+                    <div className="p-6 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <h3 className="text-xl font-bold text-slate-800">Student Applications</h3>
+                        <div className="flex items-center gap-3">
+                            <input
+                                type="text"
+                                placeholder="Search by name, email, or NIC..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="pl-4 pr-4 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium shadow-sm w-64"
+                            />
+                            <select
+                                value={filterStatus}
+                                onChange={(e) => setFilterStatus(e.target.value)}
+                                className="px-3 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-bold text-slate-700 shadow-sm cursor-pointer"
+                            >
+                                <option value="all">All Statuses</option>
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
                         </div>
                     </div>
 
-                    {/* Students Table */}
                     {loading ? (
-                        <div className="p-6 text-center">
-                            <p className="text-gray-600">Loading students...</p>
-                        </div>
-                    ) : filteredStudents.length > 0 ? (
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-gray-50 border-b border-gray-200">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name / Username</th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">NIC</th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Contact</th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Branch</th> {/* 👈 අලුතින් එකතු කලා */}
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                                        <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Actions</th>
+                        <div className="p-12 text-center text-slate-500 font-medium">Loading details...</div>
+                    ) : (
+                        <div className="overflow-x-auto w-full">
+                            <table className="w-full table-auto border-collapse">
+                                <thead>
+                                    <tr className="bg-slate-100 text-slate-600 uppercase text-xs font-bold tracking-wider border-b border-slate-200">
+                                        <th className="px-6 py-4 text-left">Student Profile</th>
+                                        <th className="px-6 py-4 text-left">Contact Info</th>
+                                        <th className="px-6 py-4 text-left">Verification</th>
+                                        <th className="px-6 py-4 text-left">Assigned Branch</th>
+                                        <th className="px-6 py-4 text-left">Status</th>
+                                        <th className="px-6 py-4 text-center">Action Controls</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className="divide-y divide-slate-200 text-sm text-slate-700">
                                     {filteredStudents.map((student) => (
-                                        <tr key={student._id} className="border-b border-gray-200 hover:bg-gray-50">
-                                            <td className="px-6 py-4 text-sm text-gray-800">
-                                                <div className="font-bold">{student.name}</div>
-                                                <div className="text-xs text-gray-400">@{student.username || 'no_username'}</div>
+                                        <tr
+                                            key={student._id}
+                                            onClick={() => {
+                                                setSelectedStudent(student);
+                                                setActiveTab('profile');
+                                            }}
+                                            className="transition-colors hover:bg-slate-50 cursor-pointer"
+                                        >
+                                            <td className="px-6 py-4">
+                                                <div className="font-bold text-slate-900 text-base">{student.name}</div>
+                                                <div className="text-xs text-slate-400 mt-0.5">@{student.username || 'no_username'}</div>
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-600">{student.email}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-600">{student.nic}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-600">{student.contact}</td>
-                                            {/* 🏛️ Branch තීරුව */}
-                                            <td className="px-6 py-4 text-sm">
-                                                <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-bold border border-blue-200">
-                                                    {student.branch || 'Not Specified'}
+                                            <td className="px-6 py-4 space-y-1">
+                                                <div className="text-slate-600 flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-slate-400" />{student.email}</div>
+                                                <div className="text-slate-500 flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-slate-400" />{student.contact || student.phone}</div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className="font-mono bg-slate-100 px-2 py-1 rounded-md border text-xs text-slate-600 font-semibold">{student.nic}</span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className="text-xs font-bold bg-blue-50 text-blue-700 px-2.5 py-1 rounded-lg border border-blue-100">
+                                                    📍 {student.branch || 'Not Specified'}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-sm">
-                                                <span
-                                                    className={`px-3 py-1 rounded-full text-xs font-semibold ${student.approvalStatus === 'pending'
-                                                            ? 'bg-yellow-100 text-yellow-800'
-                                                            : student.approvalStatus === 'approved'
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : 'bg-red-100 text-red-800'
-                                                        }`}
-                                                >
-                                                    {student.approvalStatus.toUpperCase()}
+                                            <td className="px-6 py-4">
+                                                <span className={`px-2.5 py-1 rounded-lg text-xs font-extrabold tracking-wide border ${student.approvalStatus === 'pending' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                                        student.approvalStatus === 'approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                                            'bg-rose-50 text-rose-700 border-rose-200'
+                                                    }`}>
+                                                    {(student.approvalStatus || 'pending').toUpperCase()}
                                                 </span>
                                             </td>
-                                            {/* 🎯 Actions බටන්ස් (ස්ටේටස් එක අනුව මාරු කිරීමට හැදුවා) */}
-                                            <td className="px-6 py-4 text-sm space-x-2 text-center">
-                                                {student.approvalStatus !== 'approved' && (
-                                                    <button
-                                                        onClick={() => handleApproveStudent(student._id, 'approved')}
-                                                        className="bg-green-600 text-white px-3 py-1 rounded text-xs font-bold hover:bg-green-700 transition"
-                                                    >
-                                                        Approve
-                                                    </button>
-                                                )}
-                                                {student.approvalStatus !== 'rejected' && (
-                                                    <button
-                                                        onClick={() => handleApproveStudent(student._id, 'rejected')}
-                                                        className="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold hover:bg-red-700 transition"
-                                                    >
-                                                        Reject
-                                                    </button>
-                                                )}
+                                            <td className="px-6 py-4 text-center space-x-2" onClick={(e) => e.stopPropagation()}>
+                                                <button onClick={() => handleApproveStudent(student._id, 'approved')} className="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors">Approve</button>
+                                                <button onClick={() => handleApproveStudent(student._id, 'rejected')} className="bg-rose-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-rose-700 transition-colors">Reject</button>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
-                    ) : (
-                        <div className="p-6 text-center">
-                            <p className="text-gray-600">No students found matching your criteria.</p>
-                        </div>
                     )}
                 </div>
             </div>
+
+            {/* ULTRA-WIDE & ULTRA-CLEAR POPUP WINDOW MODAL */}
+            {selectedStudent && (
+                <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex justify-center items-center z-50 p-6 animate-fadeIn">
+                    <div className="bg-white w-full max-w-6xl h-full max-h-[85vh] rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
+
+                        {/* Header Area */}
+                        <div className="bg-blue-600 p-8 text-white flex justify-between items-center flex-shrink-0 border-b border-blue-700">
+                            <div className="space-y-2">
+                                <span className="text-xs uppercase tracking-wider font-extrabold text-blue-200/90 block bg-blue-700/50 w-fit px-3 py-1 rounded-lg">
+                                    Management Information System | Student Profile Dossier
+                                </span>
+                                <h3 className="text-4xl font-black tracking-tight leading-normal pt-1">{selectedStudent.name}</h3>
+                            </div>
+                            <button
+                                onClick={() => setSelectedStudent(null)}
+                                className="bg-blue-700/60 hover:bg-red-500 text-white p-3 rounded-2xl transition-all duration-200 active:scale-95 shadow-md"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        {/* Navigation Tabs */}
+                        <div className="bg-slate-50 border-b border-slate-200 flex px-8 pt-4 gap-4 flex-shrink-0 overflow-x-auto">
+                            <button
+                                onClick={() => setActiveTab('profile')}
+                                className={`px-6 py-4 rounded-t-xl font-black text-base tracking-wide transition-all border-b-4 ${activeTab === 'profile'
+                                        ? 'bg-white text-blue-600 border-t border-x border-slate-200 border-b-blue-600 z-10 shadow-sm'
+                                        : 'text-slate-500 border-b-transparent hover:text-slate-800 hover:bg-slate-200/50'
+                                    }`}
+                            >
+                                👤 Basic Demographics
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('medical_practice')}
+                                className={`px-6 py-4 rounded-t-xl font-black text-base tracking-wide transition-all border-b-4 ${activeTab === 'medical_practice'
+                                        ? 'bg-white text-blue-600 border-t border-x border-slate-200 border-b-blue-600 z-10 shadow-sm'
+                                        : 'text-slate-500 border-b-transparent hover:text-slate-800 hover:bg-slate-200/50'
+                                    }`}
+                            >
+                                🩺 Medical & Practice
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('payments_exams')}
+                                className={`px-6 py-4 rounded-t-xl font-black text-base tracking-wide transition-all border-b-4 ${activeTab === 'payments_exams'
+                                        ? 'bg-white text-blue-600 border-t border-x border-slate-200 border-b-blue-600 z-10 shadow-sm'
+                                        : 'text-slate-500 border-b-transparent hover:text-slate-800 hover:bg-slate-200/50'
+                                    }`}
+                            >
+                                💳 Payments & Exam Schedules
+                            </button>
+                        </div>
+
+                        {/* Modal Body Content */}
+                        <div className="p-10 overflow-y-auto flex-1 bg-white space-y-8">
+
+                            {/* TAB 1: BASIC DEMOGRAPHICS */}
+                            {activeTab === 'profile' && (
+                                <div className="space-y-8">
+                                    <h4 className="text-sm font-black uppercase text-slate-400 tracking-wider border-b-2 border-slate-100 pb-2">Student Primary Dossier</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/80 flex items-center hover:bg-white hover:shadow-md transition-all duration-150">
+                                            <Mail className="w-8 h-8 text-blue-500 mr-5 flex-shrink-0" />
+                                            <div className="space-y-1">
+                                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Email Address</p>
+                                                <p className="text-xl font-extrabold text-slate-800 break-all leading-relaxed">{selectedStudent.email}</p>
+                                            </div>
+                                        </div>
+                                        <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/80 flex items-center hover:bg-white hover:shadow-md transition-all duration-150">
+                                            <Phone className="w-8 h-8 text-emerald-500 mr-5 flex-shrink-0" />
+                                            <div className="space-y-1">
+                                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Contact Number</p>
+                                                <p className="text-2xl font-black text-slate-800 tracking-wide leading-relaxed">{selectedStudent.contact || selectedStudent.phone}</p>
+                                            </div>
+                                        </div>
+                                        <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/80 flex items-center hover:bg-white hover:shadow-md transition-all duration-150">
+                                            <IdCard className="w-8 h-8 text-purple-500 mr-5 flex-shrink-0" />
+                                            <div className="space-y-1">
+                                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">NIC Identifier</p>
+                                                <p className="text-2xl font-mono font-black text-slate-800 tracking-widest leading-relaxed">{selectedStudent.nic}</p>
+                                            </div>
+                                        </div>
+                                        <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/80 flex items-center hover:bg-white hover:shadow-md transition-all duration-150">
+                                            <MapPin className="w-8 h-8 text-rose-500 mr-5 flex-shrink-0" />
+                                            <div className="space-y-1">
+                                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Operational Center Branch</p>
+                                                <p className="text-2xl font-black text-slate-800 flex items-center gap-2 leading-relaxed">📍 {selectedStudent.branch || 'Not Specified'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB 2: MEDICAL REPORT & PRACTICE SESSIONS */}
+                            {activeTab === 'medical_practice' && (
+                                <div className="space-y-10">
+                                    <div>
+                                        <h4 className="text-sm font-black uppercase text-slate-400 tracking-wider border-b-2 border-slate-100 pb-2 mb-6">Official Medical Clearance</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                            <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200 flex items-center">
+                                                <HeartPulse className="w-8 h-8 text-rose-600 mr-5 flex-shrink-0" />
+                                                <div className="space-y-1.5">
+                                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">DMT Medical Status</p>
+                                                    <span className={`text-sm font-black px-3.5 py-1.5 rounded-xl inline-block border tracking-wide mt-1 ${selectedStudent.medicalStatus === 'FAILED' ? 'bg-rose-100 text-rose-800 border-rose-200' : 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                                                        }`}>
+                                                        {selectedStudent.medicalStatus || 'PASSED / VERIFIED'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200 flex items-center">
+                                                <Calendar className="w-8 h-8 text-blue-500 mr-5 flex-shrink-0" />
+                                                <div className="space-y-1">
+                                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Medical Examination Date</p>
+                                                    <p className="text-2xl font-black text-slate-800 leading-relaxed">{selectedStudent.medicalDate || 'Not Scheduled'}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 className="text-sm font-black uppercase text-slate-400 tracking-wider border-b-2 border-slate-100 pb-2 mb-6">Behind-The-Wheel Practice Progress</h4>
+                                        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-8 space-y-6">
+                                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                                                <div className="flex items-center">
+                                                    <Car className="w-8 h-8 text-blue-600 mr-4" />
+                                                    <div className="space-y-1">
+                                                        <span className="text-2xl font-black text-slate-800 block">Practical Training Course Log</span>
+                                                        <span className="text-sm font-medium text-slate-400">Real-time breakdown managed by certified route instructors</span>
+                                                    </div>
+                                                </div>
+                                                <span className="bg-blue-600 text-white text-xl font-black px-5 py-3 rounded-xl shadow-md w-fit">
+                                                    {selectedStudent.completedSessions || '0'} / {selectedStudent.totalSessions || '15'} Hours Logged
+                                                </span>
+                                            </div>
+                                            <div className="w-full bg-slate-200 h-6 rounded-full overflow-hidden shadow-inner mt-2">
+                                                <div
+                                                    className="bg-gradient-to-r from-blue-500 to-blue-700 h-full rounded-full transition-all duration-300"
+                                                    style={{ width: `${((selectedStudent.completedSessions || 0) / (selectedStudent.totalSessions || 15)) * 100}%` }}
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB 3: PAYMENT TRACKING & EXAM SCHEDULES */}
+                            {activeTab === 'payments_exams' && (
+                                <div className="space-y-10">
+                                    <div>
+                                        <h4 className="text-sm font-black uppercase text-slate-400 tracking-wider border-b-2 border-slate-100 pb-2 mb-6">Financial Ledger Statements</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                            <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200 flex items-center">
+                                                <CreditCard className="w-8 h-8 text-slate-600 mr-5 flex-shrink-0" />
+                                                <div className="space-y-1">
+                                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Gross Fee Allocation</p>
+                                                    <p className="text-2xl font-black text-slate-800 tracking-wide mt-0.5">LKR {selectedStudent.totalFee || selectedStudent.grossFee || '0.00'}</p>
+                                                </div>
+                                            </div>
+                                            <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200 flex items-center">
+                                                <CheckCircle className="w-8 h-8 text-emerald-600 mr-5 flex-shrink-0" />
+                                                <div className="space-y-1">
+                                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Aggregated Paid</p>
+                                                    <p className="text-2xl font-black text-emerald-600 tracking-wide mt-0.5">LKR {selectedStudent.amountPaid || selectedStudent.paid || '0.00'}</p>
+                                                </div>
+                                            </div>
+                                            <div className="bg-amber-50 p-6 rounded-2xl border border-amber-200 flex items-center">
+                                                <Clock className="w-8 h-8 text-amber-600 mr-5 flex-shrink-0" />
+                                                <div className="space-y-1">
+                                                    <p className="text-xs font-bold text-amber-700 uppercase tracking-wide">Outstanding Balance</p>
+                                                    <p className="text-2xl font-black text-amber-700 tracking-wide mt-0.5">LKR {selectedStudent.dueBalance || selectedStudent.balance || '0.00'}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 className="text-sm font-black uppercase text-slate-400 tracking-wider border-b-2 border-slate-100 pb-2 mb-6">Official Examination Schedules</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                            <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200 space-y-3 shadow-sm">
+                                                <div className="flex items-center text-slate-500 text-xs font-bold uppercase tracking-wide border-b pb-2">
+                                                    <Calendar className="w-5 h-5 text-slate-400 mr-2" />
+                                                    Theory Assessment Date
+                                                </div>
+                                                <p className="text-2xl font-black text-slate-800 tracking-wide">{selectedStudent.theoryExamDate || 'Pending'}</p>
+                                                <span className={`text-xs font-extrabold px-3 py-1 rounded border inline-block ${selectedStudent.theoryStatus === 'PASSED' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-amber-100 text-amber-800 border-amber-200'
+                                                    }`}>
+                                                    {selectedStudent.theoryStatus || 'PENDING'}
+                                                </span>
+                                            </div>
+                                            <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200 space-y-3 shadow-sm">
+                                                <div className="flex items-center text-slate-500 text-xs font-bold uppercase tracking-wide border-b pb-2">
+                                                    <Award className="w-5 h-5 text-slate-400 mr-2" />
+                                                    Practical Trial Route
+                                                </div>
+                                                <p className="text-2xl font-black text-slate-800 tracking-wide">{selectedStudent.practicalExamDate || '2026-08-20'}</p>
+                                                <span className="text-xs bg-amber-100 text-amber-800 font-extrabold px-3 py-1 rounded border border-amber-200 inline-block">SCHEDULED</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                        </div>
+
+                        {/* Sticky Footer Area */}
+                        <div className="bg-slate-50 px-8 py-6 border-t border-slate-200 flex justify-between items-center flex-shrink-0">
+                            <div>
+                                <span className="text-xs font-black text-slate-400 uppercase tracking-wide block">Verification Status</span>
+                                <span className={`inline-flex px-4 py-1.5 rounded-xl text-xs font-black border mt-1 shadow-sm uppercase tracking-wider ${selectedStudent.approvalStatus === 'pending' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                        selectedStudent.approvalStatus === 'approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                            'bg-rose-50 text-rose-700 border-rose-200'
+                                    }`}>
+                                    {selectedStudent.approvalStatus}
+                                </span>
+                            </div>
+                            <div className="flex gap-4">
+                                {selectedStudent.approvalStatus !== 'approved' && (
+                                    <button
+                                        onClick={() => handleApproveStudent(selectedStudent._id, 'approved')}
+                                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl text-base font-bold shadow-md transition-all active:scale-95"
+                                    >
+                                        Approve
+                                    </button>
+                                )}
+                                {selectedStudent.approvalStatus !== 'rejected' && (
+                                    <button
+                                        onClick={() => handleApproveStudent(selectedStudent._id, 'rejected')}
+                                        className="bg-rose-600 hover:bg-rose-700 text-white px-6 py-3 rounded-xl text-base font-bold shadow-md transition-all active:scale-95"
+                                    >
+                                        Reject
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
