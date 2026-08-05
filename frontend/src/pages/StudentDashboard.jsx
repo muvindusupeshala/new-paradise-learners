@@ -297,7 +297,7 @@ const StudentDashboard = () => {
                                         <Plus className="w-5 h-5" />
                                         <span>Add This Session to List</span>
                                     </button>
-                                    division</div>
+                                </div>
                             </div>
 
                             {/* Cards List */}

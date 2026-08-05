@@ -1,8 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { LogOut, Users, Clock, CheckCircle, Phone, Mail, IdCard, Calendar, MapPin, X, CreditCard, HeartPulse, Car, Award } from 'lucide-react';
 import axios from 'axios';
+import {
+    LogOut,
+    Users,
+    Clock,
+    CheckCircle,
+    Phone,
+    Mail,
+    IdCard,
+    Calendar,
+    MapPin,
+    X,
+    CreditCard,
+    HeartPulse,
+    Car,
+    Award
+} from 'lucide-react';
 
 const AdminDashboard = () => {
     const { user, logout, isAuthenticated, token } = useAuth();
@@ -253,30 +268,33 @@ const AdminDashboard = () => {
 
             {/* ULTRA-WIDE & ULTRA-CLEAR POPUP WINDOW MODAL */}
             {selectedStudent && (
-                <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex justify-center items-center z-50 p-6 animate-fadeIn">
+                <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex justify-center items-center z-50 p-4 sm:p-6 animate-fadeIn">
                     <div className="bg-white w-full max-w-6xl h-full max-h-[85vh] rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
 
                         {/* Header Area */}
-                        <div className="bg-blue-600 p-8 text-white flex justify-between items-center flex-shrink-0 border-b border-blue-700">
+                        <div className="bg-blue-600 p-6 sm:p-8 text-white flex justify-between items-center flex-shrink-0 border-b border-blue-700">
                             <div className="space-y-2">
                                 <span className="text-xs uppercase tracking-wider font-extrabold text-blue-200/90 block bg-blue-700/50 w-fit px-3 py-1 rounded-lg">
                                     Management Information System | Student Profile Dossier
                                 </span>
-                                <h3 className="text-4xl font-black tracking-tight leading-normal pt-1">{selectedStudent.name}</h3>
+                                <h3 className="text-2xl sm:text-4xl font-black tracking-tight leading-snug pt-1">
+                                    {selectedStudent.name || 'Student Profile'}
+                                </h3>
                             </div>
                             <button
                                 onClick={() => setSelectedStudent(null)}
-                                className="bg-blue-700/60 hover:bg-red-500 text-white p-3 rounded-2xl transition-all duration-200 active:scale-95 shadow-md"
+                                className="bg-blue-700/60 hover:bg-red-500 text-white p-3 rounded-2xl transition-all duration-200 active:scale-95 shadow-md flex items-center justify-center flex-shrink-0"
+                                aria-label="Close modal"
                             >
                                 <X className="w-6 h-6" />
                             </button>
                         </div>
 
                         {/* Navigation Tabs */}
-                        <div className="bg-slate-50 border-b border-slate-200 flex px-8 pt-4 gap-4 flex-shrink-0 overflow-x-auto">
+                        <div className="bg-slate-50 border-b border-slate-200 flex px-6 sm:px-8 pt-4 gap-2 sm:gap-4 flex-shrink-0 overflow-x-auto">
                             <button
                                 onClick={() => setActiveTab('profile')}
-                                className={`px-6 py-4 rounded-t-xl font-black text-base tracking-wide transition-all border-b-4 ${activeTab === 'profile'
+                                className={`px-5 py-3.5 rounded-t-xl font-black text-sm sm:text-base tracking-wide transition-all border-b-4 whitespace-nowrap ${activeTab === 'profile'
                                         ? 'bg-white text-blue-600 border-t border-x border-slate-200 border-b-blue-600 z-10 shadow-sm'
                                         : 'text-slate-500 border-b-transparent hover:text-slate-800 hover:bg-slate-200/50'
                                     }`}
@@ -285,7 +303,7 @@ const AdminDashboard = () => {
                             </button>
                             <button
                                 onClick={() => setActiveTab('medical_practice')}
-                                className={`px-6 py-4 rounded-t-xl font-black text-base tracking-wide transition-all border-b-4 ${activeTab === 'medical_practice'
+                                className={`px-5 py-3.5 rounded-t-xl font-black text-sm sm:text-base tracking-wide transition-all border-b-4 whitespace-nowrap ${activeTab === 'medical_practice'
                                         ? 'bg-white text-blue-600 border-t border-x border-slate-200 border-b-blue-600 z-10 shadow-sm'
                                         : 'text-slate-500 border-b-transparent hover:text-slate-800 hover:bg-slate-200/50'
                                     }`}
@@ -294,7 +312,7 @@ const AdminDashboard = () => {
                             </button>
                             <button
                                 onClick={() => setActiveTab('payments_exams')}
-                                className={`px-6 py-4 rounded-t-xl font-black text-base tracking-wide transition-all border-b-4 ${activeTab === 'payments_exams'
+                                className={`px-5 py-3.5 rounded-t-xl font-black text-sm sm:text-base tracking-wide transition-all border-b-4 whitespace-nowrap ${activeTab === 'payments_exams'
                                         ? 'bg-white text-blue-600 border-t border-x border-slate-200 border-b-blue-600 z-10 shadow-sm'
                                         : 'text-slate-500 border-b-transparent hover:text-slate-800 hover:bg-slate-200/50'
                                     }`}
@@ -304,39 +322,49 @@ const AdminDashboard = () => {
                         </div>
 
                         {/* Modal Body Content */}
-                        <div className="p-10 overflow-y-auto flex-1 bg-white space-y-8">
+                        <div className="p-6 sm:p-10 overflow-y-auto flex-1 bg-white space-y-8">
 
                             {/* TAB 1: BASIC DEMOGRAPHICS */}
                             {activeTab === 'profile' && (
                                 <div className="space-y-8">
-                                    <h4 className="text-sm font-black uppercase text-slate-400 tracking-wider border-b-2 border-slate-100 pb-2">Student Primary Dossier</h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <h4 className="text-xs sm:text-sm font-black uppercase text-slate-400 tracking-wider border-b-2 border-slate-100 pb-2">
+                                        Student Primary Dossier
+                                    </h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                                         <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/80 flex items-center hover:bg-white hover:shadow-md transition-all duration-150">
                                             <Mail className="w-8 h-8 text-blue-500 mr-5 flex-shrink-0" />
-                                            <div className="space-y-1">
+                                            <div className="space-y-1 overflow-hidden">
                                                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Email Address</p>
-                                                <p className="text-xl font-extrabold text-slate-800 break-all leading-relaxed">{selectedStudent.email}</p>
+                                                <p className="text-lg sm:text-xl font-extrabold text-slate-800 break-all leading-relaxed">
+                                                    {selectedStudent.email || 'N/A'}
+                                                </p>
                                             </div>
                                         </div>
                                         <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/80 flex items-center hover:bg-white hover:shadow-md transition-all duration-150">
                                             <Phone className="w-8 h-8 text-emerald-500 mr-5 flex-shrink-0" />
                                             <div className="space-y-1">
                                                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Contact Number</p>
-                                                <p className="text-2xl font-black text-slate-800 tracking-wide leading-relaxed">{selectedStudent.contact || selectedStudent.phone}</p>
+                                                <p className="text-xl sm:text-2xl font-black text-slate-800 tracking-wide leading-relaxed">
+                                                    {selectedStudent.contact || selectedStudent.phone || 'N/A'}
+                                                </p>
                                             </div>
                                         </div>
                                         <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/80 flex items-center hover:bg-white hover:shadow-md transition-all duration-150">
                                             <IdCard className="w-8 h-8 text-purple-500 mr-5 flex-shrink-0" />
                                             <div className="space-y-1">
                                                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">NIC Identifier</p>
-                                                <p className="text-2xl font-mono font-black text-slate-800 tracking-widest leading-relaxed">{selectedStudent.nic}</p>
+                                                <p className="text-xl sm:text-2xl font-mono font-black text-slate-800 tracking-widest leading-relaxed">
+                                                    {selectedStudent.nic || 'N/A'}
+                                                </p>
                                             </div>
                                         </div>
                                         <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/80 flex items-center hover:bg-white hover:shadow-md transition-all duration-150">
                                             <MapPin className="w-8 h-8 text-rose-500 mr-5 flex-shrink-0" />
                                             <div className="space-y-1">
                                                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Operational Center Branch</p>
-                                                <p className="text-2xl font-black text-slate-800 flex items-center gap-2 leading-relaxed">📍 {selectedStudent.branch || 'Not Specified'}</p>
+                                                <p className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2 leading-relaxed">
+                                                    📍 {selectedStudent.branch || 'Not Specified'}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -347,13 +375,17 @@ const AdminDashboard = () => {
                             {activeTab === 'medical_practice' && (
                                 <div className="space-y-10">
                                     <div>
-                                        <h4 className="text-sm font-black uppercase text-slate-400 tracking-wider border-b-2 border-slate-100 pb-2 mb-6">Official Medical Clearance</h4>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <h4 className="text-xs sm:text-sm font-black uppercase text-slate-400 tracking-wider border-b-2 border-slate-100 pb-2 mb-6">
+                                            Official Medical Clearance
+                                        </h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                                             <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200 flex items-center">
                                                 <HeartPulse className="w-8 h-8 text-rose-600 mr-5 flex-shrink-0" />
                                                 <div className="space-y-1.5">
                                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">DMT Medical Status</p>
-                                                    <span className={`text-sm font-black px-3.5 py-1.5 rounded-xl inline-block border tracking-wide mt-1 ${selectedStudent.medicalStatus === 'FAILED' ? 'bg-rose-100 text-rose-800 border-rose-200' : 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                                                    <span className={`text-sm font-black px-3.5 py-1.5 rounded-xl inline-block border tracking-wide mt-1 ${selectedStudent.medicalStatus === 'FAILED'
+                                                            ? 'bg-rose-100 text-rose-800 border-rose-200'
+                                                            : 'bg-emerald-100 text-emerald-800 border-emerald-200'
                                                         }`}>
                                                         {selectedStudent.medicalStatus || 'PASSED / VERIFIED'}
                                                     </span>
@@ -363,31 +395,40 @@ const AdminDashboard = () => {
                                                 <Calendar className="w-8 h-8 text-blue-500 mr-5 flex-shrink-0" />
                                                 <div className="space-y-1">
                                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Medical Examination Date</p>
-                                                    <p className="text-2xl font-black text-slate-800 leading-relaxed">{selectedStudent.medicalDate || 'Not Scheduled'}</p>
+                                                    <p className="text-xl sm:text-2xl font-black text-slate-800 leading-relaxed">
+                                                        {selectedStudent.medicalDate || 'Not Scheduled'}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <h4 className="text-sm font-black uppercase text-slate-400 tracking-wider border-b-2 border-slate-100 pb-2 mb-6">Behind-The-Wheel Practice Progress</h4>
-                                        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-8 space-y-6">
+                                        <h4 className="text-xs sm:text-sm font-black uppercase text-slate-400 tracking-wider border-b-2 border-slate-100 pb-2 mb-6">
+                                            Behind-The-Wheel Practice Progress
+                                        </h4>
+                                        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6">
                                             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                                                 <div className="flex items-center">
-                                                    <Car className="w-8 h-8 text-blue-600 mr-4" />
+                                                    <Car className="w-8 h-8 text-blue-600 mr-4 flex-shrink-0" />
                                                     <div className="space-y-1">
-                                                        <span className="text-2xl font-black text-slate-800 block">Practical Training Course Log</span>
-                                                        <span className="text-sm font-medium text-slate-400">Real-time breakdown managed by certified route instructors</span>
+                                                        <span className="text-xl sm:text-2xl font-black text-slate-800 block">Practical Training Course Log</span>
+                                                        <span className="text-xs sm:text-sm font-medium text-slate-400">Real-time breakdown managed by certified route instructors</span>
                                                     </div>
                                                 </div>
-                                                <span className="bg-blue-600 text-white text-xl font-black px-5 py-3 rounded-xl shadow-md w-fit">
-                                                    {selectedStudent.completedSessions || '0'} / {selectedStudent.totalSessions || '15'} Hours Logged
+                                                <span className="bg-blue-600 text-white text-lg sm:text-xl font-black px-5 py-3 rounded-xl shadow-md w-fit">
+                                                    {selectedStudent.completedSessions ?? 0} / {selectedStudent.totalSessions ?? 15} Hours Logged
                                                 </span>
                                             </div>
                                             <div className="w-full bg-slate-200 h-6 rounded-full overflow-hidden shadow-inner mt-2">
                                                 <div
                                                     className="bg-gradient-to-r from-blue-500 to-blue-700 h-full rounded-full transition-all duration-300"
-                                                    style={{ width: `${((selectedStudent.completedSessions || 0) / (selectedStudent.totalSessions || 15)) * 100}%` }}
+                                                    style={{
+                                                        width: `${Math.min(
+                                                            100,
+                                                            ((selectedStudent.completedSessions || 0) / (selectedStudent.totalSessions || 15)) * 100
+                                                        )}%`
+                                                    }}
                                                 ></div>
                                             </div>
                                         </div>
@@ -399,42 +440,56 @@ const AdminDashboard = () => {
                             {activeTab === 'payments_exams' && (
                                 <div className="space-y-10">
                                     <div>
-                                        <h4 className="text-sm font-black uppercase text-slate-400 tracking-wider border-b-2 border-slate-100 pb-2 mb-6">Financial Ledger Statements</h4>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                        <h4 className="text-xs sm:text-sm font-black uppercase text-slate-400 tracking-wider border-b-2 border-slate-100 pb-2 mb-6">
+                                            Financial Ledger Statements
+                                        </h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
                                             <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200 flex items-center">
                                                 <CreditCard className="w-8 h-8 text-slate-600 mr-5 flex-shrink-0" />
                                                 <div className="space-y-1">
                                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Gross Fee Allocation</p>
-                                                    <p className="text-2xl font-black text-slate-800 tracking-wide mt-0.5">LKR {selectedStudent.totalFee || selectedStudent.grossFee || '0.00'}</p>
+                                                    <p className="text-xl sm:text-2xl font-black text-slate-800 tracking-wide mt-0.5">
+                                                        LKR {selectedStudent.totalFee || selectedStudent.grossFee || '0.00'}
+                                                    </p>
                                                 </div>
                                             </div>
                                             <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200 flex items-center">
                                                 <CheckCircle className="w-8 h-8 text-emerald-600 mr-5 flex-shrink-0" />
                                                 <div className="space-y-1">
                                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Aggregated Paid</p>
-                                                    <p className="text-2xl font-black text-emerald-600 tracking-wide mt-0.5">LKR {selectedStudent.amountPaid || selectedStudent.paid || '0.00'}</p>
+                                                    <p className="text-xl sm:text-2xl font-black text-emerald-600 tracking-wide mt-0.5">
+                                                        LKR {selectedStudent.amountPaid || selectedStudent.paid || '0.00'}
+                                                    </p>
                                                 </div>
                                             </div>
                                             <div className="bg-amber-50 p-6 rounded-2xl border border-amber-200 flex items-center">
                                                 <Clock className="w-8 h-8 text-amber-600 mr-5 flex-shrink-0" />
                                                 <div className="space-y-1">
                                                     <p className="text-xs font-bold text-amber-700 uppercase tracking-wide">Outstanding Balance</p>
-                                                    <p className="text-2xl font-black text-amber-700 tracking-wide mt-0.5">LKR {selectedStudent.dueBalance || selectedStudent.balance || '0.00'}</p>
+                                                    <p className="text-xl sm:text-2xl font-black text-amber-700 tracking-wide mt-0.5">
+                                                        LKR {selectedStudent.dueBalance || selectedStudent.balance || '0.00'}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <h4 className="text-sm font-black uppercase text-slate-400 tracking-wider border-b-2 border-slate-100 pb-2 mb-6">Official Examination Schedules</h4>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <h4 className="text-xs sm:text-sm font-black uppercase text-slate-400 tracking-wider border-b-2 border-slate-100 pb-2 mb-6">
+                                            Official Examination Schedules
+                                        </h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                                             <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200 space-y-3 shadow-sm">
                                                 <div className="flex items-center text-slate-500 text-xs font-bold uppercase tracking-wide border-b pb-2">
                                                     <Calendar className="w-5 h-5 text-slate-400 mr-2" />
                                                     Theory Assessment Date
                                                 </div>
-                                                <p className="text-2xl font-black text-slate-800 tracking-wide">{selectedStudent.theoryExamDate || 'Pending'}</p>
-                                                <span className={`text-xs font-extrabold px-3 py-1 rounded border inline-block ${selectedStudent.theoryStatus === 'PASSED' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-amber-100 text-amber-800 border-amber-200'
+                                                <p className="text-xl sm:text-2xl font-black text-slate-800 tracking-wide">
+                                                    {selectedStudent.theoryExamDate || 'Pending'}
+                                                </p>
+                                                <span className={`text-xs font-extrabold px-3 py-1 rounded border inline-block ${selectedStudent.theoryStatus === 'PASSED'
+                                                        ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                                                        : 'bg-amber-100 text-amber-800 border-amber-200'
                                                     }`}>
                                                     {selectedStudent.theoryStatus || 'PENDING'}
                                                 </span>
@@ -444,8 +499,15 @@ const AdminDashboard = () => {
                                                     <Award className="w-5 h-5 text-slate-400 mr-2" />
                                                     Practical Trial Route
                                                 </div>
-                                                <p className="text-2xl font-black text-slate-800 tracking-wide">{selectedStudent.practicalExamDate || '2026-08-20'}</p>
-                                                <span className="text-xs bg-amber-100 text-amber-800 font-extrabold px-3 py-1 rounded border border-amber-200 inline-block">SCHEDULED</span>
+                                                <p className="text-xl sm:text-2xl font-black text-slate-800 tracking-wide">
+                                                    {selectedStudent.practicalExamDate || 'Pending Schedule'}
+                                                </p>
+                                                <span className={`text-xs font-extrabold px-3 py-1 rounded border inline-block ${selectedStudent.practicalStatus === 'PASSED'
+                                                        ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                                                        : 'bg-amber-100 text-amber-800 border-amber-200'
+                                                    }`}>
+                                                    {selectedStudent.practicalStatus || 'SCHEDULED'}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -484,6 +546,7 @@ const AdminDashboard = () => {
                                 )}
                             </div>
                         </div>
+
                     </div>
                 </div>
             )}
