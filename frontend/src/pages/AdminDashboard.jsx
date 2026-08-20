@@ -2,22 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import axios from 'axios';
-import {
-    LogOut,
-    Users,
-    Clock,
-    CheckCircle,
-    Phone,
-    Mail,
-    IdCard,
-    Calendar,
-    MapPin,
-    X,
-    CreditCard,
-    HeartPulse,
-    Car,
-    Award
-} from 'lucide-react';
+import BranchManagement from '../components/BranchManagement';
+import { LogOut, Users, Building2, Clock, CheckCircle, Mail, Phone, X, IdCard, MapPin, HeartPulse, Calendar, Car, CreditCard, Award } from 'lucide-react';
 
 const AdminDashboard = () => {
     const { user, logout, isAuthenticated, token } = useAuth();
@@ -109,6 +95,7 @@ const AdminDashboard = () => {
     });
 
     return (
+
         <div className="min-h-screen bg-slate-100 font-sans flex flex-col justify-start items-center w-full antialiased relative">
             {/* Navbar */}
             <nav className="bg-blue-600 text-white shadow-md sticky top-0 z-50 w-full flex justify-center border-b-2 border-blue-700">
@@ -135,6 +122,7 @@ const AdminDashboard = () => {
             {/* Main Layout Container */}
             <div className="w-full max-w-[95vw] px-4 py-8 flex flex-col space-y-8">
                 {/* Title Header */}
+
                 <div className="border-b border-slate-200 pb-4">
                     <h2 className="text-3xl font-black text-slate-800 flex items-center gap-2">
                         Admin Dashboard <span className="text-2xl">📊</span>
@@ -247,8 +235,8 @@ const AdminDashboard = () => {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`px-2.5 py-1 rounded-lg text-xs font-extrabold tracking-wide border ${student.approvalStatus === 'pending' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                                                        student.approvalStatus === 'approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                                                            'bg-rose-50 text-rose-700 border-rose-200'
+                                                    student.approvalStatus === 'approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                                        'bg-rose-50 text-rose-700 border-rose-200'
                                                     }`}>
                                                     {(student.approvalStatus || 'pending').toUpperCase()}
                                                 </span>
@@ -295,8 +283,8 @@ const AdminDashboard = () => {
                             <button
                                 onClick={() => setActiveTab('profile')}
                                 className={`px-5 py-3.5 rounded-t-xl font-black text-sm sm:text-base tracking-wide transition-all border-b-4 whitespace-nowrap ${activeTab === 'profile'
-                                        ? 'bg-white text-blue-600 border-t border-x border-slate-200 border-b-blue-600 z-10 shadow-sm'
-                                        : 'text-slate-500 border-b-transparent hover:text-slate-800 hover:bg-slate-200/50'
+                                    ? 'bg-white text-blue-600 border-t border-x border-slate-200 border-b-blue-600 z-10 shadow-sm'
+                                    : 'text-slate-500 border-b-transparent hover:text-slate-800 hover:bg-slate-200/50'
                                     }`}
                             >
                                 👤 Basic Demographics
@@ -304,8 +292,8 @@ const AdminDashboard = () => {
                             <button
                                 onClick={() => setActiveTab('medical_practice')}
                                 className={`px-5 py-3.5 rounded-t-xl font-black text-sm sm:text-base tracking-wide transition-all border-b-4 whitespace-nowrap ${activeTab === 'medical_practice'
-                                        ? 'bg-white text-blue-600 border-t border-x border-slate-200 border-b-blue-600 z-10 shadow-sm'
-                                        : 'text-slate-500 border-b-transparent hover:text-slate-800 hover:bg-slate-200/50'
+                                    ? 'bg-white text-blue-600 border-t border-x border-slate-200 border-b-blue-600 z-10 shadow-sm'
+                                    : 'text-slate-500 border-b-transparent hover:text-slate-800 hover:bg-slate-200/50'
                                     }`}
                             >
                                 🩺 Medical & Practice
@@ -313,8 +301,8 @@ const AdminDashboard = () => {
                             <button
                                 onClick={() => setActiveTab('payments_exams')}
                                 className={`px-5 py-3.5 rounded-t-xl font-black text-sm sm:text-base tracking-wide transition-all border-b-4 whitespace-nowrap ${activeTab === 'payments_exams'
-                                        ? 'bg-white text-blue-600 border-t border-x border-slate-200 border-b-blue-600 z-10 shadow-sm'
-                                        : 'text-slate-500 border-b-transparent hover:text-slate-800 hover:bg-slate-200/50'
+                                    ? 'bg-white text-blue-600 border-t border-x border-slate-200 border-b-blue-600 z-10 shadow-sm'
+                                    : 'text-slate-500 border-b-transparent hover:text-slate-800 hover:bg-slate-200/50'
                                     }`}
                             >
                                 💳 Payments & Exam Schedules
@@ -384,8 +372,8 @@ const AdminDashboard = () => {
                                                 <div className="space-y-1.5">
                                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">DMT Medical Status</p>
                                                     <span className={`text-sm font-black px-3.5 py-1.5 rounded-xl inline-block border tracking-wide mt-1 ${selectedStudent.medicalStatus === 'FAILED'
-                                                            ? 'bg-rose-100 text-rose-800 border-rose-200'
-                                                            : 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                                                        ? 'bg-rose-100 text-rose-800 border-rose-200'
+                                                        : 'bg-emerald-100 text-emerald-800 border-emerald-200'
                                                         }`}>
                                                         {selectedStudent.medicalStatus || 'PASSED / VERIFIED'}
                                                     </span>
@@ -488,8 +476,8 @@ const AdminDashboard = () => {
                                                     {selectedStudent.theoryExamDate || 'Pending'}
                                                 </p>
                                                 <span className={`text-xs font-extrabold px-3 py-1 rounded border inline-block ${selectedStudent.theoryStatus === 'PASSED'
-                                                        ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
-                                                        : 'bg-amber-100 text-amber-800 border-amber-200'
+                                                    ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                                                    : 'bg-amber-100 text-amber-800 border-amber-200'
                                                     }`}>
                                                     {selectedStudent.theoryStatus || 'PENDING'}
                                                 </span>
@@ -503,8 +491,8 @@ const AdminDashboard = () => {
                                                     {selectedStudent.practicalExamDate || 'Pending Schedule'}
                                                 </p>
                                                 <span className={`text-xs font-extrabold px-3 py-1 rounded border inline-block ${selectedStudent.practicalStatus === 'PASSED'
-                                                        ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
-                                                        : 'bg-amber-100 text-amber-800 border-amber-200'
+                                                    ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                                                    : 'bg-amber-100 text-amber-800 border-amber-200'
                                                     }`}>
                                                     {selectedStudent.practicalStatus || 'SCHEDULED'}
                                                 </span>
@@ -521,8 +509,8 @@ const AdminDashboard = () => {
                             <div>
                                 <span className="text-xs font-black text-slate-400 uppercase tracking-wide block">Verification Status</span>
                                 <span className={`inline-flex px-4 py-1.5 rounded-xl text-xs font-black border mt-1 shadow-sm uppercase tracking-wider ${selectedStudent.approvalStatus === 'pending' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                                        selectedStudent.approvalStatus === 'approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                                            'bg-rose-50 text-rose-700 border-rose-200'
+                                    selectedStudent.approvalStatus === 'approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                        'bg-rose-50 text-rose-700 border-rose-200'
                                     }`}>
                                     {selectedStudent.approvalStatus}
                                 </span>
